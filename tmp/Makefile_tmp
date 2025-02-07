@@ -9,60 +9,43 @@ BIN_DIR = $(BUILD_DIR)/bin
 # Files
 TARGET = $(BIN_DIR)/app
 
-SOURCES = crt.s \
-		  main.c \
-		  led.c
+SOURCES = main.c \
+		  led.c \
+		  crt.s
 
 OBJECT_NAMES := $(SOURCES:.c=.o)
 OBJECT_NAMES := $(OBJECT_NAMES:.s=.o)
 OBJECTS = $(patsubst %,$(OBJ_DIR)/%,$(OBJECT_NAMES))
 
-# Toolchain
 CC = arm-none-eabi-gcc
 AS = arm-none-eabi-as
 LD = arm-none-eabi-ld
 BIN = arm-none-eabi-objcopy
 STL = st-flash
 
-#  Flags
 WFLAGS = -Wall -Wextra -Werror -Wshadow
 CFLAGS = -mthumb -mcpu=cortex-m33 $(WFLAGS) \
 	$(addprefix -I,$(INC_DIR)) -Og -g
 LINKER_SCRIPT = linker.ld
 LDFLAGS =  -T $(LINKER_SCRIPT) $(addprefix -L,$(LIB_DIR))
 
-
 all: $(TARGET).bin
 
-listsrc:
-	echo $(SOURCES)
+%.o: %.s
+	$(AS) -o $@ $^
 
-listobj:
-	echo $(OBJECTS)
+%.o: %.c
+	$(CC) $(CFLAGS) -Iinc -c -o $@ $^
 
-# Compiling assembly files
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.s
+$(TARGET).elf: main.o crt.o led.o
 	@mkdir -p $(dir $@)
-	$(AS) $^ -o $@
+	$(LD) $(LDFLAGS) -o $@ $^
 
-# Compiling C files
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $^ -o $@
-
-# Linking
-$(TARGET).elf: $(OBJECTS)
-	@mkdir -p $(dir $@)
-	$(LD) $(LDFLAGS) $(OBJECTS) -o $@
-
-# Convert to binary
 $(TARGET).bin: $(TARGET).elf
 	$(BIN) -O binary $^ $@
 
-.PHONY: all clean flash erase
-
 clean:
-	rm -f *.o *.elf *.bin -r $(BUILD_DIR)/*
+	rm -f *.o *.elf *.bin -r build/*
 
 flash: $(TARGET).bin
 	$(STL) write $^ 0x8000000
