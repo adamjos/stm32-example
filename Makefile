@@ -9,8 +9,8 @@ BIN_DIR = $(BUILD_DIR)/bin
 # Files
 TARGET = $(BIN_DIR)/app
 
-SOURCES = crt.s \
-		  main.c \
+SOURCES = main.c \
+		  crt.s \
 		  led.c
 
 OBJECT_NAMES := $(SOURCES:.c=.o)
@@ -59,7 +59,7 @@ $(TARGET).elf: $(OBJECTS)
 $(TARGET).bin: $(TARGET).elf
 	$(BIN) -O binary $^ $@
 
-.PHONY: all clean flash erase
+.PHONY: all clean flash erase reset
 
 clean:
 	rm -f *.o *.elf *.bin -r $(BUILD_DIR)/*
@@ -69,3 +69,6 @@ flash: $(TARGET).bin
 
 erase:
 	$(STL) erase
+
+reset:
+	$(STL) reset

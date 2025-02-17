@@ -1,10 +1,15 @@
 .cpu cortex-m33
 .thumb
 
-// end of 20K RAM
-.word 0x20005000
-.word _reset
+.section .isr_vector, "a"
+.global __vector_table
+__vector_table:
+    .word _stack_top
+    .word reset_handler
+
+.section .reset_handler, "ax"
+.global reset_handler
 .thumb_func
-_reset:
+reset_handler:
     bl main
     b .
