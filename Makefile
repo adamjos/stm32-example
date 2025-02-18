@@ -10,8 +10,7 @@ BIN_DIR = $(BUILD_DIR)/bin
 TARGET = $(BIN_DIR)/app
 
 SOURCES = main.c \
-		  crt.s \
-		  led.c
+		  led.c \
 
 OBJECT_NAMES := $(SOURCES:.c=.o)
 OBJECT_NAMES := $(OBJECT_NAMES:.s=.o)
@@ -41,7 +40,7 @@ listobj:
 	echo $(OBJECTS)
 
 # Compiling assembly files
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.s
+$(OBJ_DIR)/%.o: %.s
 	@mkdir -p $(dir $@)
 	$(AS) $^ -o $@
 
@@ -51,7 +50,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 # Linking
-$(TARGET).elf: $(OBJECTS)
+$(TARGET).elf: $(OBJ_DIR)/crt.o $(OBJECTS)
 	@mkdir -p $(dir $@)
 	$(LD) $(LDFLAGS) $(OBJECTS) -o $@
 
