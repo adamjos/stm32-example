@@ -23,6 +23,7 @@ LD = arm-none-eabi-ld
 BIN = arm-none-eabi-objcopy
 STL = st-flash
 CPPCHECK = cppcheck
+OPENOCD = openocd
 
 #  Flags
 WFLAGS = -Wall -Wextra -Werror -Wshadow
@@ -59,7 +60,7 @@ $(TARGET).elf: $(OBJ_DIR)/crt.o $(OBJECTS)
 $(TARGET).bin: $(TARGET).elf
 	$(BIN) -O binary $^ $@
 
-.PHONY: all clean flash erase reset check
+.PHONY: all clean flash erase reset check start-debug-server
 
 clean:
 	rm -f *.o *.elf *.bin -r $(BUILD_DIR)/*
@@ -81,3 +82,8 @@ check:
 	-I /usr/include/ \
 	-I /usr/local/include/ \
 	$(SRC_DIR)/ \
+
+start-debug-server:
+	$(OPENOCD) \
+	-f /usr/share/openocd/scripts/interface/stlink-v2.cfg \
+	-f /usr/share/openocd/scripts/target/stm32l5x.cfg
