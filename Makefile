@@ -22,6 +22,7 @@ AS = arm-none-eabi-as
 LD = arm-none-eabi-ld
 BIN = arm-none-eabi-objcopy
 STL = st-flash
+CPPCHECK = cppcheck
 
 #  Flags
 WFLAGS = -Wall -Wextra -Werror -Wshadow
@@ -58,7 +59,7 @@ $(TARGET).elf: $(OBJ_DIR)/crt.o $(OBJECTS)
 $(TARGET).bin: $(TARGET).elf
 	$(BIN) -O binary $^ $@
 
-.PHONY: all clean flash erase reset
+.PHONY: all clean flash erase reset check
 
 clean:
 	rm -f *.o *.elf *.bin -r $(BUILD_DIR)/*
@@ -71,3 +72,12 @@ erase:
 
 reset:
 	$(STL) reset
+
+check:
+	@$(CPPCHECK) --quiet --enable=all --error-exitcode=1 \
+	 --inline-suppr \
+	 --suppress=missingIncludeSystem \
+	-I $(INC_DIR)/ \
+	-I /usr/include/ \
+	-I /usr/local/include/ \
+	$(SRC_DIR)/ \
