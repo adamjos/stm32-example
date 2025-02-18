@@ -53,7 +53,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 # Linking
 $(TARGET).elf: $(OBJ_DIR)/crt.o $(OBJECTS)
 	@mkdir -p $(dir $@)
-	$(LD) $(LDFLAGS) $(OBJECTS) -o $@
+	$(LD) $(LDFLAGS) $^ -o $@
 
 # Convert to binary
 $(TARGET).bin: $(TARGET).elf
