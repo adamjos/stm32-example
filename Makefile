@@ -11,6 +11,7 @@ TARGET = $(BIN_DIR)/app
 
 SOURCES = main.c \
 		  led.c \
+		  io.c \
 
 OBJECT_NAMES := $(SOURCES:.c=.o)
 OBJECT_NAMES := $(OBJECT_NAMES:.s=.o)
